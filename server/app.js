@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const uploadRoute = require('./routes/upload');
 const lyricsRoute = require('./routes/lyrics');
+const renderRoute = require('./routes/render');
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 // Mount routes (always after middleware, always before .listen)
 app.use('/upload', uploadRoute);
 app.use('/lyrics', lyricsRoute);
+app.use('/render', renderRoute);
 
 // Health check
 app.get('/', (req, res) => {
