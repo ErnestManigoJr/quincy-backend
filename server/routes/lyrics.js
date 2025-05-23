@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// Simulated GPT-based lyric rewriting (replace with OpenAI API in production)
 router.post('/', (req, res) => {
   const { text } = req.body;
 
@@ -9,7 +8,6 @@ router.post('/', (req, res) => {
     return res.status(400).json({ error: 'No lyrics provided.' });
   }
 
-  // Simple fake rewrite
   const rewritten = text
     .split('\n')
     .map(line => `🎵 ${line.trim()}... (remixed)`)
