@@ -11,6 +11,7 @@ const uploadRoute = require('./routes/upload');
 const lyricsRoute = require('./routes/lyrics');
 const renderRoute = require('./routes/render');
 const driveRoute = require('./routes/drive'); // Google Drive upload
+const testRoute = require('./routes/test');   // ✅ NEW: test file generator
 
 const app = express();
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use('/api/upload', uploadRoute);
 app.use('/api/lyrics', lyricsRoute);
 app.use('/api/render', renderRoute);
 app.use('/api/save-to-drive', driveRoute);
+app.use('/api', testRoute); // ✅ Mount test route to allow /api/create-test-file
 
 // Health check
 app.get('/', (req, res) => {
