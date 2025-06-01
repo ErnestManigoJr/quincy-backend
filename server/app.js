@@ -1,36 +1,40 @@
-// server/app.js
-
 const express = require('express');
 const dotenv = require('dotenv');
+const path = require('path');
 
-// Load environment variables from .env
+// Load .env variables
 dotenv.config();
-
-// Import all route files
-const uploadRoute = require('./routes/upload');
-const lyricsRoute = require('./routes/lyrics');
-const renderRoute = require('./routes/render');
-const driveRoute = require('./routes/drive'); // Google Drive upload
-const testRoute = require('./routes/test');   // ✅ NEW: test file generator
 
 const app = express();
 app.use(express.json());
 
-// Mount under /api so all routes respond to /api/<route>
-app.use('/api/upload', uploadRoute);
+// ROUTES
+const uploadAudioRoute = require('./routes/upload');       // NEW: user audio uploads via Multer
+const lyricsRoute = require('./routes/lyrics');
+const renderRoute = require('./routes/render');
+const driveRoute = require('./routes/drive');              // Google Drive uploader
+const testRoute = require('./routes/test');                // test file generator
+
+// REGISTER ROUTES
+app.use('/api/upload', uploadAudioRoute);                  // POST /api/upload (multipart form: audio file)
 app.use('/api/lyrics', lyricsRoute);
 app.use('/api/render', renderRoute);
 app.use('/api/save-to-drive', driveRoute);
-app.use('/api', testRoute); // ✅ Mount test route to allow /api/create-test-file
+app.use('/api', testRoute);
 
-// Health check
+// STATIC FILE SERVE (OPTIONAL)
+app.use('/outputs', express.static(path.join(__dirname, '../outputs'))); // Allows streaming access
+
+// HEALTH CHECK
 app.get('/', (req, res) => {
   res.send('Quincy Backend Running');
 });
 
-// Listen
+// START SERVER
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Quincy Backend running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Quincy Backend running on port ${PORT}`);
+});
 
 
 
