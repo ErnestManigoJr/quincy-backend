@@ -43,6 +43,7 @@ router.post('/', async (req, res) => {
         ? [process.env.GOOGLE_DRIVE_FOLDER_ID]
         : undefined,
     };
+    console.log("Resolved path:", filePath);
 
     const media = {
       mimeType,
