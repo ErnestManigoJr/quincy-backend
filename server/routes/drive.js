@@ -20,28 +20,45 @@ const drive = google.drive({ version: 'v3', auth: oAuth2Client });
 router.post('/', async (req, res) => {
   try {
     const { fileName, mimeType } = req.body;
-    const filePath = path.join(__dirname, '../../outputs', fileName);
+    const outputsDir = path.join(__dirname, '../../outputs');
+    const filePath = path.join(outputsDir, fileName);
+
+    // ✅ Ensure the outputs/ directory exists
+    if (!fs.existsSync(outputsDir)) {
+      fs.mkdirSync(outputsDir, { recursive: true });
+      console.log('Created outputs/ directory');
+    }
+
+    // ✅ Validate file existence before upload
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        error: `File not found: ${fileName} in outputs/`,
+      });
+    }
 
     const fileMetadata = {
       name: fileName,
-      parents: process.env.GOOGLE_DRIVE_FOLDER_ID ? [process.env.GOOGLE_DRIVE_FOLDER_ID] : undefined
+      parents: process.env.GOOGLE_DRIVE_FOLDER_ID
+        ? [process.env.GOOGLE_DRIVE_FOLDER_ID]
+        : undefined,
     };
 
     const media = {
       mimeType,
-      body: fs.createReadStream(filePath)
+      body: fs.createReadStream(filePath),
     };
 
     const response = await drive.files.create({
       requestBody: fileMetadata,
       media,
-      fields: 'id, webViewLink'
+      fields: 'id, webViewLink',
     });
 
     res.status(200).json({
       success: true,
       fileId: response.data.id,
-      link: response.data.webViewLink
+      link: response.data.webViewLink,
     });
   } catch (err) {
     console.error('Google Drive upload error:', err.message);
@@ -50,5 +67,6 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+
 
 
